@@ -1,15 +1,14 @@
 Luminia — Vercel-ready project
 ==============================
 
-What's included:
--          -> api/
-  sendMessage.js
-public/
-index.htmlServerless function (backend) that calls OpenAI using an env variable
-- public/app.js       -> Frontend JS
-- public/style.css    -> Theme (soft gold + lilac)
-- index.html          -> Simple chat interface
-- README_VISUAL.txt   -> Step-by-step deploy instructions with visual cues
+What's included:luminia (repo root)
+│
+├── index.html        ← The main front-end page (what loads in the browser)
+├── public/           ← Static assets (images, icons, CSS, JS files)
+├── api/              ← Serverless backend functions
+│     sendMessage.js  ← Handles messages from your app
+│     other functions… (if any)
+└── other files…      ← Optional, e.g., README.md, package.json if used
 
 Quick deploy steps:
 1. Create a GitHub repo and push these files to the root folder.
