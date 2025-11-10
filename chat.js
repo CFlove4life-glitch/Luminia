@@ -1,30 +1,35 @@
-import OpenAI from "openai";
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
+// Select page elements
+const chatForm = document.querySelector('#chatForm'); // form where user types
+const chatInput = document.querySelector('#chatInput'); // text input field
+const chatWindow = document.querySelector('#chatWindow'); // where messages show
 
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Listen for form submission
+chatForm.addEventListener('submit', async (e) => {
+  e.preventDefault(); // prevent page refresh
+
+  const message = chatInput.value.trim();
+  if (!message) return;
+
+  // Show user's message in chat
+  chatWindow.innerHTML += `<div class="user-message">${message}</div>`;
+  chatInput.value = '';
 
   try {
-    const { message, mode } = req.body;
-
-    const prompt = `
-      You are Luminia — an AI companion who is energetic, funny, supportive,
-      and motivational, with a calm, wise spiritual aura, Harvard-smart, and street-intelligent.
-      Mode: ${mode}.
-      User: ${message}
-    `;
-
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [{ role: "user", content: prompt }]
+    // Send message to backend API
+    const response = await fetch('/api/sendMessage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message })
     });
 
-    res.status(200).json({ reply: completion.choices[0].message.content });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "AI request failed" });
+    const data = await response.json();
+
+    // Show AI response
+    chatWindow.innerHTML += `<div class="ai-message">${data.reply}</div>`;
+  } catch (err) {
+    // Show error if API fails
+    chatWindow.innerHTML += `<div class="error">Connection error. Try again.</div>`;
+    console.error(err);
   }
-}
+});
