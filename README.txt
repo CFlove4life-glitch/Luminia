@@ -2,7 +2,10 @@ Luminia — Vercel-ready project
 ==============================
 
 What's included:
-- api/chat.js         -> Serverless function (backend) that calls OpenAI using an env variable
+-          -> api/
+  sendMessage.js
+public/
+index.htmlServerless function (backend) that calls OpenAI using an env variable
 - public/app.js       -> Frontend JS
 - public/style.css    -> Theme (soft gold + lilac)
 - index.html          -> Simple chat interface
