@@ -1,35 +1,35 @@
-const chatBox = document.getElementById("chat-box");
-const userInput = document.getElementById("user-input");
-const sendBtn = document.getElementById("send-btn");
 
-sendBtn.addEventListener("click", sendMessage);
-userInput.addEventListener("keypress", e => { if(e.key === 'Enter') sendMessage(); });
+// 1️⃣ Select elements from the page
+const form = document.querySelector('#chatForm'); // the message form
+const input = document.querySelector('#messageInput'); // text input
+const chat = document.querySelector('#chatWindow'); // area where messages show
 
-function addMessage(content, cls){
-  const div = document.createElement('div');
-  div.className = 'message ' + cls;
-  div.textContent = content;
-  chatBox.appendChild(div);
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
+// 2️⃣ Handle sending a message
+form.addEventListener('submit', async (e) => {
+    e.preventDefault(); // prevent page reload
 
-async function sendMessage(){
-  const text = userInput.value.trim();
-  if(!text) return;
-  addMessage(text, 'user');
-  userInput.value = '';
-  addMessage('Thinking...', 'bot');
-  try{
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ message: text, mode: 'friend' })
-    });
-    const data = await res.json();
-    const bots = Array.from(document.querySelectorAll('.bot'));
-    bots[bots.length - 1].textContent = data.reply || 'Hmm...';
-  }catch(e){
-    const bots = Array.from(document.querySelectorAll('.bot'));
-    bots[bots.length - 1].textContent = 'Connection error. Try again later.';
-  }
-}
+    const message = input.value;
+    if (!message) return;
+
+    // Add user message to chat
+    chat.innerHTML += `<div class="user-message">${message}</div>`;
+
+    input.value = ''; // clear input
+
+    try {
+        // 3️⃣ Send message to backend
+        const response = await fetch('/api/sendMessage', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message })
+        });
+
+        const data = await response.json();
+
+        // 4️⃣ Show AI response
+        chat.innerHTML += `<div class="ai-message">${data.reply}</div>`;
+    } catch (error) {
+        chat.innerHTML += `<div class="error">Connection error. Try again.</div>`;
+        console.error(error);
+    }
+});
